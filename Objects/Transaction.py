@@ -1,7 +1,7 @@
-from Account import Account
-from Category import Category
+from Objects.Account import Account
+from Objects.Category import Category
 from datetime import datetime
-from tools import *
+from Tools.tools import *
 
 class Transaction:
     ask_if_unsure = None  # ask about category if unsure
@@ -51,17 +51,40 @@ class Transaction:
             return Category.Restaurant
         elif "domino's" in desc:
             return Category.Restaurant
+        elif "doordash" in desc:
+            return Category.Restaurant
+        elif "porter square spirits" in desc:
+            return Category.Restaurant
+        elif "sugar & spice" in desc:
+            return Category.Restaurant
         ## TRANSPORTATION
         elif "subway" in desc and self.amt == -9.6:
+            return Category.Transportation
+        elif "lyft" in desc:
+            return  Category.Transportation
+        elif "mbta" in desc:
             return Category.Transportation
         ## INTERNAL TRANSFER
         elif "home banking" in desc:
             return Category.InternalTransfer
-        elif "bank of america" in desc:
+        elif "bank of america" in desc and "cashreward" not in desc:
             return Category.InternalTransfer
+        elif "venmo" in desc:
+            return Category.InternalTransfer
+        elif "transfer joshua kennedy" in desc:
+            return Category.InternalTransfer
+        ## BANKING
+        elif "overdraft" in desc:
+            return Category.Banking
         ## ENTERTAINMENT
         elif "playstation" in desc:
             return Category.Entertainment
+        ## CASHBACK
+        elif "bank of america" in desc and "cashreward" in desc:
+            return Category.CashBack
+        ## HOME MAINTENANCE
+        elif "tag's ace hardware" in desc:
+            return Category.HomeMaintenance
         ## ELSE, ASK OR RETURN NONE
         else:
             if Transaction.ask_if_unsure == None:

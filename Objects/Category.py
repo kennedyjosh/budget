@@ -17,3 +17,5 @@ class Category(Enum):
     Transportation = 10
     Clothing = 11
     InternalTransfer = 12   # for transfers between accounts
+    CashBack = 13
+    Banking = 14    # for fees, not transfers
