@@ -15,7 +15,7 @@ def process_csv(csvfile: str, account: Account) -> [Transaction]:
         first_line_boa = True
         reader = csv.reader(f)
         for line in reader:
-            if account in [Account.BoA_Checking, Account.BoA_CreditCard]:
+            if account == Account.BoA_Checking:
                 # date, desc, amt, balance after transaction
                 # some header info at top to ignore, also one line to ignore after date
                 if len(line) > 0 and line[0] == "Date":
@@ -29,6 +29,18 @@ def process_csv(csvfile: str, account: Account) -> [Transaction]:
                                                     datetime.datetime.strptime(line[0], "%m/%d/%Y"),
                                                     line[1],
                                                     float(line[2].replace("\"", " "))))
+            elif account == Account.BoA_CreditCard:
+                # date, ref #, paid to, address, amt
+                if first_line_boa:
+                    first_line_boa = False
+                    continue
+                else:
+                    if line[0].endswith("2020"):
+                        line[0] = line[0][:-2]
+                    transactions.append(Transaction(account,
+                                                datetime.datetime.strptime(line[0], "%m/%d/%y"),
+                                                "{}; {}".format(line[2], line[3]),
+                                                float(line[4])))
             elif account in [Account.MFCU_Checking, Account.MFCU_Savings]:
                 # m/d/y date, desc, , amount, balance after transaction
                 transactions.append(Transaction(account,
@@ -37,12 +49,12 @@ def process_csv(csvfile: str, account: Account) -> [Transaction]:
                                                 float(line[3])))
             elif account == Account.Venmo:
                 # username, transaction ID, datetime, type, status, note, from, to, amt, fee, ...
-                if line[0] == '' and line[0] != '':
+                if line[0] == '' and line[1] != '':
                     desc = "FROM:{}, TO:{}; {}".format(line[6], line[7], line[5])
                     transactions.append(Transaction(account,
                                                     datetime.datetime.strptime(line[2], "%Y-%m-%dT%H:%M:%S"),
                                                     desc,
-                                                    float(line[8].replace("$", " ").replace(" ", ""))))
+                                                    float(line[8].replace("$", " ").replace("(", " ").replace(")", " ").replace(" ", ""))))
     return transactions
 
 
