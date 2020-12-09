@@ -1,16 +1,16 @@
-from Objects.Account import Account
-from Objects.Transaction import Transaction
-from pprint import pprint
-from Tools.tools import *
+import Objects
+import Tools.tools
 import csv
 import datetime
 import os
 import sys
 
-def process_csv(csvfile: str, account: Account) -> [Transaction]:
-    assert type(account) == Account, "account must be of type Account(Enum)"
+def process_csv(csvfile: str, account: Objects.Account.Account) -> [Objects.Transaction.Transaction]:
+    assert type(account) == Objects.Account.Account, "account must be of type Account(Enum)"
     transactions = []
     with open(csvfile, newline='') as f:
+        Account = Objects.Account.Account
+        Transaction = Objects.Transaction.Transaction
         passed_header_boa = False
         first_line_boa = True
         reader = csv.reader(f)
@@ -59,15 +59,13 @@ def process_csv(csvfile: str, account: Account) -> [Transaction]:
 
 
 if __name__ == "__main__":
-    os.system('cls' if os.name == 'nt' else 'clear')
+    Tools.tools.tools.clear_console()
     assert len(sys.argv) == 2, "to run file: python3 process_csv.py [name of csv file]"
-    for i, acc in enumerate(Account):
+    for i, acc in enumerate(Objects.Account.Account):
         print("{}. {}".format(i+1, acc.name))
-    response = validate_user_input("Which account is the csv file associated with? Enter a number: ",
+    response = Tools.tools.tools.validate_user_input("Which account is the csv file associated with? Enter a number: ",
                                    range(1, i+2),
                                    fun=lambda x: int(x.strip()))
-    for i, acc in enumerate(Account):
+    for i, acc in enumerate(Objects.Account.Account):
         if i+1 == response:
             transactions = process_csv(sys.argv[1], acc)
-
-    pprint(transactions)

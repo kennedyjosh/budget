@@ -1,12 +1,11 @@
-from Objects.Account import Account
-from Objects.Category import Category
-from datetime import datetime
-from Tools.tools import *
+import Objects.Account as A
+import Objects.Category as C
+import datetime
 
 class Transaction:
     ask_if_unsure = None  # ask about category if unsure
 
-    def __init__(self, account: Account, date: datetime, description: str, amount: int, category: Category = None):
+    def __init__(self, account: A.Account, date: datetime, description: str, amount: int, category: C.Category = None):
         self.account = account          # account (MFCU/BoA/etc.)
         self.date = date                # date of transation
         self.desc = description         # description of transaction
@@ -34,6 +33,7 @@ class Transaction:
         # tries to determine category from transaction description
         # returns None if category cannot be determined
         desc = self.desc.strip().lower()
+        Category = C.Category
         ## RENT
         if "ralph malin" in desc:
             return Category.Rent
@@ -87,8 +87,9 @@ class Transaction:
             return Category.HomeMaintenance
         ## ELSE, ASK OR RETURN NONE
         else:
+            import Tools.tools as tools
             if Transaction.ask_if_unsure == None:
-                response = validate_user_input("Should I ask you if I am unsure of a transaction's category? y/n:",
+                response = tools.validate_user_input("Should I ask you if I am unsure of a transaction's category? y/n:",
                                                ["y", "n"],
                                                fun=lambda x: x.strip().lower())
                 if response == "y":
@@ -100,7 +101,7 @@ class Transaction:
                 print("Categories:")
                 for i, cat in enumerate(Category):
                     print("\t{}. {}".format(i+1, cat.name))
-                response = validate_user_input("Enter the number of the category for this transaction:\n" +
+                response = tools.validate_user_input("Enter the number of the category for this transaction:\n" +
                                                    "\t{}, {}, ${}\nEnter a number here: ".format(
                                                        self.get_readable_date(), self.desc, self.amt),
                                                range(1, i+2),
